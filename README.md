@@ -1,4 +1,4 @@
-# DocuMind — Document-based RAG Assistant
+# ChemRag — Document-based RAG Assistant
 
 A small, fully working Retrieval-Augmented Generation system over a PDF
 knowledge base (e.g. chemistry textbook chapters and lecture notes), with
