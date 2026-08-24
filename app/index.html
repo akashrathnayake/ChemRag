@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DocuMind — Chemistry RAG Assistant</title>
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===== Sidebar: navigation only ===== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <img src="https://img.magnific.com/free-vector/atom-illustration-model-with-electrons-neutron-isolated_1284-53084.jpg?semt=ais_hybrid&w=740&q=80" alt="Brand Logo">
+      </div>
+      <div>
+        <h1>ChemRag</h1>
+        <p class="brand-sub">Grounded chemistry Q&amp;A</p>
+      </div>
+    </div>
+
+    <nav class="nav-list">
+      <button class="nav-item active" data-view="chat">Chat</button>
+      <button class="nav-item" data-view="kb">Knowledge Base</button>
+      <button class="nav-item" data-view="ingestion">Ingestion Status</button>
+      <button class="nav-item" data-view="sources">Retrieved Sources</button>
+      <button class="nav-item" data-view="eval">Evaluation</button>
+      <button class="nav-item" data-view="settings">Settings</button>
+    </nav>
+
+    <div class="sidebar-footer hint">
+      Answers are grounded only in retrieved document chunks. If context is
+      weak, DocuMind says it cannot confirm rather than guessing.
+    </div>
+  </aside>
+
+  <!-- ===== Main content: one view visible at a time ===== -->
+  <main class="main">
+
+    <!-- ---------- Chat view ---------- -->
+    <section class="view active" id="view-chat">
+      <header class="main-header">
+        <div>
+          <h2>Ask about your chemistry documents</h2>
+          <p class="hint">Answers are grounded only in retrieved document chunks, with citations shown beside each answer.</p>
+        </div>
+        <button id="clearBtn" class="btn btn-ghost">Clear chat</button>
+      </header>
+
+      <div id="chatWindow" class="chat-window">
+        <div class="welcome-card">
+          <img src="C.png" alt="Welcome to DocuMind">
+        </div>
+      </div>
+
+      <form id="chatForm" class="chat-input-row">
+        <input
+          type="text"
+          id="questionInput"
+          placeholder="Ask a question about atomic structure, reactions, formulas..."
+          autocomplete="off"
+        />
+        <button type="submit" class="btn btn-primary" id="askBtn">Ask</button>
+      </form>
+    </section>
+
+    <!-- ---------- Knowledge Base view ---------- -->
+    <section class="view" id="view-kb">
+      <header class="main-header">
+        <div>
+          <h2>Knowledge base</h2>
+          <p class="hint">Upload 1–10 PDF, TXT, or Markdown documents. Re-uploading the same file is detected and skipped automatically.</p>
+        </div>
+      </header>
+
+      <div class="kb-grid">
+        <div class="panel-card">
+          <h3>Upload documents</h3>
+          <label class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept=".pdf,.txt,.md,.markdown" multiple hidden />
+            <span class="dropzone-icon">⬆️</span>
+            <span class="dropzone-text">Click or drag PDF / TXT / Markdown files here</span>
+          </label>
+          <button id="uploadBtn" class="btn btn-primary" disabled>Ingest documents</button>
+          <div id="uploadStatus" class="status-line"></div>
+        </div>
+
+        <div class="panel-card">
+          <h3>Current documents</h3>
+          <ul id="docList" class="doc-list">
+            <li class="empty-hint">No documents yet.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- Ingestion Status view ---------- -->
+    <section class="view" id="view-ingestion">
+      <header class="main-header">
+        <div>
+          <h2>Ingestion status</h2>
+          <p class="hint">Every document currently processed into the vector store, with chunk counts and a content-hash prefix used for duplicate detection.</p>
+        </div>
+        <button id="refreshIngestionBtn" class="btn btn-ghost">Refresh</button>
+      </header>
+      <div class="table-wrap">
+        <table class="data-table" id="ingestionTable">
+          <thead>
+            <tr><th>Title</th><th>Type</th><th>Chunks</th><th>Content hash</th><th>Ingested at</th><th>Status</th></tr>
+          </thead>
+          <tbody><tr><td colspan="6" class="empty-hint">No documents ingested yet.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- Retrieved Sources view ---------- -->
+    <section class="view" id="view-sources">
+      <header class="main-header">
+        <div>
+          <h2>Retrieved sources</h2>
+          <p class="hint">The document chunks retrieved and used for your most recent question.</p>
+        </div>
+      </header>
+      <div id="sourcesPanel" class="sources-panel">
+        <p class="empty-hint">Ask a question in the Chat view first — the sources it used will appear here.</p>
+      </div>
+    </section>
+
+    <!-- ---------- Evaluation view ---------- -->
+    <section class="view" id="view-eval">
+      <header class="main-header">
+        <div>
+          <h2>Evaluation</h2>
+          <p class="hint">Runs the benchmark question set through the live pipeline and scores each answer with deterministic rules, a retrieval-hit check, and a Gemini LLM judge.</p>
+        </div>
+        <button id="evalBtn" class="btn btn-primary" style="width:auto;">Run evaluation</button>
+      </header>
+      <div id="evalSummaryCards" class="eval-cards"></div>
+      <div class="table-wrap">
+        <table class="data-table" id="evalTable">
+          <thead>
+            <tr><th>Question</th><th>Expected source</th><th>Rule</th><th>Retrieval hit</th><th>Correctness</th><th>Relevance</th><th>Groundedness</th></tr>
+          </thead>
+          <tbody><tr><td colspan="7" class="empty-hint">No evaluation run yet.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- Settings view ---------- -->
+    <section class="view" id="view-settings">
+      <header class="main-header">
+        <div>
+          <h2>Settings</h2>
+          <p class="hint">Safe, read-only configuration notes. API keys and other secrets are never displayed here — they live only in environment variables.</p>
+        </div>
+      </header>
+      <div id="settingsList" class="settings-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<template id="messageTemplate">
+  <div class="message">
+    <div class="message-bubble"></div>
+    <div class="citations"></div>
+  </div>
+</template>
+
+<script src="script.js"></script>
+</body>
+</html>
