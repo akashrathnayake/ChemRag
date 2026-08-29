@@ -1,9 +1,11 @@
-# ChemRag — Document-based RAG Assistant
+# ChemRAG — Document-based RAG Assistant
+
+<img src=".\assets\interface.png" width="1000" alt="Interface">
 
 A small, fully working Retrieval-Augmented Generation system over a PDF
 knowledge base (e.g. chemistry textbook chapters and lecture notes), with
 grounded answers, visible
-citations, follow-up conversation support, and offline evaluation with an
+citations, follow-up conversation support, and evaluation with an
 LLM judge.
 
 ## What it does
@@ -263,3 +265,29 @@ worked around:
   overlap can surface.** There's no re-ranking model or cross-encoder
   step — for very large or highly overlapping knowledge bases, retrieval
   quality would benefit from one.
+
+  ## Question Answering
+
+  <img src=".\assets\question answering.png" width="1000" alt="Chat">
+  <img src=".\assets\calculations.png" width="1000" alt="Chat">
+
+  ## Knowledge Base
+
+  <img src=".\assets\knowledge base.png" width="1000" alt="Knowledge Base">
+
+  ## Ingestion Status
+
+  <img src=".\assets\ingestion status.png" width="1000" alt="Ingestion Status">
+
+  ## Retrieved Sources
+
+  <img src=".\assets\retrieved sources.png" width="1000" alt="Retrieved Sources">
+
+  ## Evaluation
+
+  <img src=".\assets\evaluation.png" width="1000" alt="Evaluation">
+  <img src=".\assets\evaluation 2.jpeg" width="1000" alt="Evaluation">
+
+  ## Settings
+
+  <img src=".\assets\settings.png" width="1000" alt="Settings">

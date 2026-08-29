@@ -381,12 +381,7 @@ clearBtn.addEventListener("click", async () => {
   await fetch(`${API_BASE}/api/chat/history?session_id=${SESSION_ID}`, { method: "DELETE" });
   chatWindow.innerHTML = `
     <div class="welcome-card">
-      <div class="welcome-icon">🧪</div>
-      <h3>Welcome to DocuMind</h3>
-      <p>Upload a few chemistry PDFs, TXT, or Markdown files under
-        <strong>Knowledge Base</strong>, then ask things like
-        <em>"What is Bohr's postulate for electron energy levels?"</em>
-        or follow up with <em>"explain more"</em> — DocuMind remembers the conversation.</p>
+    <img src="C.png" alt="Welcome to ChemRAG">
     </div>`;
   lastCitations = [];
   sourcesPanel.innerHTML = `<p class="empty-hint">Ask a question in the Chat view first — the sources it used will appear here.</p>`;
