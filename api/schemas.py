@@ -62,6 +62,7 @@ class ChatResponse(BaseModel):
     citations: List[CitationOut]
     calculations: List[CalculationOut] = []
     security_flagged_sources: int = 0
+    from_cache: bool = False
     rule_check: dict
 
 
